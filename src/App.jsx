@@ -1,12 +1,19 @@
-export default function App() {
+import ReservationPage
+from "./pages/ReservationPage";
 
-  return (
+import LoginPage
+from "./pages/LoginPage";
 
-    <div>
+function App() {
 
-      Hello Reservation
+  const token =
+    localStorage.getItem("token");
 
-    </div>
+  return token
 
-  )
+    ? <ReservationPage />
+
+    : <LoginPage />;
 }
+
+export default App;
