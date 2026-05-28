@@ -1,31 +1,57 @@
 import { useState } from "react";
 import { login } from "../api/authApi";
-
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+const navigate = useNavigate();
+ const handleLogin = async (e) => {
 
-    const loginData = {
-      email: email,
-      password: password,
-    };
+  e.preventDefault();
 
-    try {
-      const result = await login(loginData);
+  try {
 
-      console.log("로그인 성공:", result);
-      alert("로그인 성공!");
+const result = await login({
 
-      // 백엔드에서 토큰을 주면 나중에 여기에 저장할 수 있음
-      // localStorage.setItem("token", result.token);
-    } catch (error) {
-      console.error("로그인 실패:", error);
-      alert("로그인 실패. 서버 주소나 입력값을 확인해주세요.");
-    }
-  };
+  email,
+  password,
+
+});
+
+console.log(result);
+
+const data =
+  typeof result === "string"
+    ? JSON.parse(result)
+    : result;
+
+localStorage.setItem(
+  "token",
+  data.token
+);
+
+console.log(
+  "저장된 토큰:",
+  data.token
+);
+
+window.location.href =
+  "/reservation";
+
+alert("로그인 성공");
+
+navigate("/reservation");
+   
+
+  } catch (error) {
+
+    alert("로그인 실패");
+
+  }
+
+};
 
   return (
     <div>
@@ -59,6 +85,21 @@ function Login() {
         <br />
 
         <button type="submit">로그인</button>
+        <p className="mt-4 text-sm">
+
+  계정이 없으신가요?
+
+  <Link
+    to="/signup"
+    className="
+      ml-2
+      text-blue-500
+    "
+  >
+    회원가입
+  </Link>
+
+</p>
       </form>
     </div>
   );

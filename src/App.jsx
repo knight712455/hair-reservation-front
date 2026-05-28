@@ -1,28 +1,55 @@
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ReservationPage from "./pages/ReservationPage";
 
 function App() {
+
+  const token =
+    localStorage.getItem("token");
+
   return (
-    <div>
-      <h1>헤어샵 예약 서비스</h1>
 
-      <div>
-        <a href="/login">로그인</a>
-        {" | "}
-        <a href="/signup">회원가입</a>
-      </div>
+    <BrowserRouter>
 
-      <hr />
+      <Routes>
 
-      {window.location.pathname === "/login" && <Login />}
-      {window.location.pathname === "/signup" && <Signup />}
-      {window.location.pathname === "/" && (
-        <div>
-          <h2>메인 페이지</h2>
-          <p>로그인 또는 회원가입을 선택해주세요.</p>
-        </div>
-      )}
-    </div>
+        {/* 로그인 */}
+        <Route
+          path="/"
+          element={<Login />}
+        />
+
+        {/* 회원가입 */}
+        <Route
+          path="/signup"
+          element={<Signup />}
+        />
+
+        {/* 예약 페이지 */}
+        <Route
+          path="/reservation"
+          element={
+
+            token
+
+              ? <ReservationPage />
+
+              : <Navigate to="/" />
+
+          }
+        />
+
+      </Routes>
+
+    </BrowserRouter>
+
   );
 }
 

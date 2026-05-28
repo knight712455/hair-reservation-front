@@ -1,33 +1,64 @@
-const BASE_URL = "http://localhost:8080";
+const BASE_URL =
+  "http://localhost:8080";
 
-export async function signup(userData) {
-  const response = await fetch(`${BASE_URL}/api/users/signup`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  });
+export const login = async (
+  loginData
+) => {
 
-  if (!response.ok) {
-    throw new Error("회원가입 실패");
-  }
+  const response = await fetch(
+    `${BASE_URL}/auth/login`,
+    {
+      method: "POST",
 
-  return response.json();
-}
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
 
-export async function login(loginData) {
-  const response = await fetch(`${BASE_URL}/api/users/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(loginData),
-  });
+      body: JSON.stringify(
+        loginData
+      ),
+    }
+  );
 
   if (!response.ok) {
-    throw new Error("로그인 실패");
+
+    throw new Error(
+      "로그인 실패"
+    );
+
   }
 
-  return response.json();
-}
+  return response.text();
+};
+
+export const signup = async (
+  signupData
+) => {
+
+  const response = await fetch(
+    "http://localhost:8080/auth/signup",
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+
+      body: JSON.stringify(
+        signupData
+      ),
+    }
+  );
+
+  if (!response.ok) {
+
+    throw new Error(
+      "회원가입 실패"
+    );
+
+  }
+
+  return response.text();
+};

@@ -1,8 +1,17 @@
 import { useState } from "react";
 
 export default function ReservationPage() {
-    const token =
-  localStorage.getItem("token");
+
+  const token = localStorage.getItem("token");
+
+  console.log("토큰 확인:", token);
+
+  if (!token) {
+
+    window.location.href = "/";
+
+    return null;
+  }
 
   const [selectedDesigner, setSelectedDesigner] =
     useState(null);
@@ -12,18 +21,18 @@ export default function ReservationPage() {
 
   const [selectedTime, setSelectedTime] =
     useState("");
-const [reservations, setReservations] =
-  useState([]);
+
+  const [reservations, setReservations] =
+    useState([]);
 
   const [timeSlots, setTimeSlots] =
-  useState([]);
-  const [loginUser, setLoginUser] =
-  useState({
+    useState([]);
 
-    id: 1,
-    name: "기사"
-
-  });
+  const [loginUser] =
+    useState({
+      id: 1,
+      name: "기사",
+    });
 
 const designers = [
 
@@ -124,35 +133,6 @@ const formatDateTime = (
     
   dateTime
 ) => {
-    const isPastTime = (
-  time
-) => {
-
-  if (!selectedDate) {
-    return false;
-  }
-
-  const today =
-    new Date()
-      .toISOString()
-      .split("T")[0];
-
-  if (selectedDate !== today) {
-    return false;
-  }
-
-  const now = new Date();
-
-  const currentHour =
-    now.getHours();
-
-  const targetHour =
-    parseInt(
-      time.split(":")[0]
-    );
-
-  return targetHour <= currentHour;
-};
 
   return dateTime
     .replace("T", " ")
@@ -232,23 +212,38 @@ const isPastTime = (
 
   try {
 
-   const response = await fetch(
-  `http://localhost:8080/reservations/timeslots?resourceId=${resourceId}&date=${date}`,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
+    const response = await fetch(
+      `http://localhost:8080/reservations/timeslots?resourceId=${resourceId}&date=${date}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+
+      console.log("타임슬롯 조회 실패");
+
+      setTimeSlots([]);
+
+      return;
+    }
+
+ const data =
+  await response.json();
+
+setTimeSlots(
+  Array.isArray(data)
+    ? data
+    : []
 );
-
-    const data =
-      await response.json();
-
-    setTimeSlots(data);
 
   } catch (error) {
 
     console.log(error);
+
+    setTimeSlots([]);
 
   }
 
@@ -261,22 +256,37 @@ const loadReservations = async (
   try {
 
     const response = await fetch(
-  `http://localhost:8080/reservations?resourceId=${resourceId}&page=0&size=10`,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-);
+      `http://localhost:8080/reservations?resourceId=${resourceId}&page=0&size=10`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+
+      console.log("예약 조회 실패");
+
+      setReservations([]);
+
+      return;
+    }
 
     const data =
       await response.json();
 
-    setReservations(data.content);
+    setReservations(
+  Array.isArray(data.content)
+    ? data.content
+    : []
+);
 
   } catch (error) {
 
     console.log(error);
+
+    setReservations([]);
 
   }
 
@@ -312,15 +322,13 @@ const loadReservations = async (
         {
           method: "POST",
 
-          headers: {
+     headers: {
 
   "Content-Type": "application/json",
-  Authorization: `Bearer ${token}`,
 
   Authorization:
-    `Bearer ${
-      localStorage.getItem("token")
-    }`,
+    `Bearer ${token}`,
+
 },
 
           body: JSON.stringify({
@@ -422,8 +430,8 @@ const cancelReservation = async (
 const handleLogout = () => {
 
   localStorage.removeItem(
-    "token"
-  );
+  "token",
+);
 
   window.location.href = "/";
 };
@@ -438,7 +446,7 @@ const handleLogout = () => {
 
   <div className="text-sm text-gray-600">
 
-    {loginUser.name} 님
+    {loginUser?.name} 님
 
   </div>
 
@@ -662,9 +670,9 @@ onChange={(e) => {
 
                     <div className="grid grid-cols-2 gap-3">
 
-                      {timeSlots
-
-  .filter((slot) => {
+                      {Array.isArray(timeSlots) &&
+  timeSlots
+    .filter((slot) => {
 
     const hour =
       parseInt(
@@ -819,8 +827,8 @@ isPastTime(slot.time)
       </thead>
 
       <tbody>
-
-  {reservations.map((r) => (
+{Array.isArray(reservations) &&
+  reservations.map((r) => (
 
     <tr
       key={r.id}

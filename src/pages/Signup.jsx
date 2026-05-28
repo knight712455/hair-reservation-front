@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { signup } from "../api/authApi";
-
+import { Link } from "react-router-dom";
 function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -86,6 +86,21 @@ function Signup() {
         <br />
 
         <button type="submit">회원가입</button>
+        <p className="mt-4 text-sm">
+
+  이미 계정이 있으신가요?
+
+  <Link
+    to="/"
+    className="
+      ml-2
+      text-blue-500
+    "
+  >
+    로그인
+  </Link>
+
+</p>
       </form>
     </div>
   );
